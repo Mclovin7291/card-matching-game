@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'providers/game_provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => GameProvider(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -28,69 +34,60 @@ class GameScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Card Matching Game'),
+        title: const Text('Animal Cards'),
         backgroundColor: Theme.of(context).colorScheme.primaryContainer,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            // Score and moves counter
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+      body: Consumer<GameProvider>(
+        builder: (context, gameProvider, child) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
               children: [
-                Text(
-                  'Moves: 0',
-                  style: Theme.of(context).textTheme.headlineSmall,
+                const Text(
+                  'Animal Assignment Phase',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-                Text(
-                  'Pairs: 0/8',
-                  style: Theme.of(context).textTheme.headlineSmall,
+                const SizedBox(height: 20),
+                // Card grid
+                Expanded(
+                  child: GridView.builder(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 4,
+                      crossAxisSpacing: 8,
+                      mainAxisSpacing: 8,
+                    ),
+                    itemCount: gameProvider.cards.length,
+                    itemBuilder: (context, index) {
+                      final card = gameProvider.cards[index];
+                      return Card(
+                        elevation: 4,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Center(
+                            child: Text(
+                              card.animal,
+                              style: const TextStyle(fontSize: 40),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 20),
+                // Shuffle button
+                ElevatedButton.icon(
+                  onPressed: gameProvider.initGame,
+                  icon: const Icon(Icons.shuffle),
+                  label: const Text('Shuffle Animals'),
                 ),
               ],
             ),
-            const SizedBox(height: 20),
-            // Card grid will go here
-            Expanded(
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 4,
-                  crossAxisSpacing: 8,
-                  mainAxisSpacing: 8,
-                ),
-                itemCount: 16, // 4x4 grid
-                itemBuilder: (context, index) {
-                  return Card(
-                    elevation: 4,
-                    child: InkWell(
-                      onTap: () {
-                        // Card flip logic will go here
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.blue.shade100,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: const Center(
-                          child: Icon(Icons.question_mark, size: 40),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 20),
-            // Reset button
-            ElevatedButton.icon(
-              onPressed: () {
-                // Reset game logic will go here
-              },
-              icon: const Icon(Icons.refresh),
-              label: const Text('Reset Game'),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
