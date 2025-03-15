@@ -8,13 +8,12 @@ class GameProvider extends ChangeNotifier {
   GameCard? secondCard;
   bool canFlip = true;
   int matches = 0;
+  int moves = 0;
 
   // List of animal emojis for cards
   final List<String> animals = [
     '🐶', '🐱', '🐭', '🐹',
-    '🐰', '🦊', '🐻', '🐼',
-    '🦁', '🐯', '🐮', '🐷',
-    '🐸', '🐙', '🦋', '🦒',
+    '🐰', '🦊', '🐻', '🐼'
   ];
 
   GameProvider() {
@@ -40,6 +39,7 @@ class GameProvider extends ChangeNotifier {
     secondCard = null;
     canFlip = true;
     matches = 0;
+    moves = 0;
     
     notifyListeners();
   }
@@ -58,6 +58,7 @@ class GameProvider extends ChangeNotifier {
       firstCard = cards[index];
     } else {
       secondCard = cards[index];
+      moves++;  // Increment moves when second card is flipped
       canFlip = false;  // Prevent further flips while checking
       checkMatch();
     }
