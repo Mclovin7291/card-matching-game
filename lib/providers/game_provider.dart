@@ -33,4 +33,12 @@ class GameProvider extends ChangeNotifier {
     
     notifyListeners();
   }
+
+  void flipCard(int index) {
+    // Flip the selected card
+    cards[index] = cards[index].copyWith(
+      isFlipped: !cards[index].isFlipped,
+    );
+    notifyListeners();
+  }
 } 

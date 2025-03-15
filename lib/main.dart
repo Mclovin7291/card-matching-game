@@ -44,7 +44,7 @@ class GameScreen extends StatelessWidget {
             child: Column(
               children: [
                 const Text(
-                  'Animal Assignment Phase',
+                  'Tap to Flip Cards',
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 20),
@@ -61,15 +61,21 @@ class GameScreen extends StatelessWidget {
                       final card = gameProvider.cards[index];
                       return Card(
                         elevation: 4,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Center(
-                            child: Text(
-                              card.animal,
-                              style: const TextStyle(fontSize: 40),
+                        child: InkWell(
+                          onTap: () => gameProvider.flipCard(index),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            decoration: BoxDecoration(
+                              color: card.isFlipped ? Colors.white : Colors.blue.shade100,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Center(
+                              child: card.isFlipped
+                                  ? Text(
+                                      card.animal,
+                                      style: const TextStyle(fontSize: 40),
+                                    )
+                                  : const Icon(Icons.question_mark, size: 40),
                             ),
                           ),
                         ),
@@ -82,7 +88,7 @@ class GameScreen extends StatelessWidget {
                 ElevatedButton.icon(
                   onPressed: gameProvider.initGame,
                   icon: const Icon(Icons.shuffle),
-                  label: const Text('Shuffle Animals'),
+                  label: const Text('New Game'),
                 ),
               ],
             ),
