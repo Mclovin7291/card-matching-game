@@ -34,48 +34,77 @@ class GameScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Animal Cards'),
+        title: const Text('Animal Memory Game'),
         backgroundColor: Theme.of(context).colorScheme.primaryContainer,
       ),
       body: Consumer<GameProvider>(
         builder: (context, gameProvider, child) {
           return Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                const Text(
-                  'Tap to Flip Cards',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                // Game progress
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Text(
+                      'Matches: ${gameProvider.matches}/8',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    if (gameProvider.isGameComplete)
+                      const Text(
+                        '🎉 You Won! 🎉',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green,
+                        ),
+                      ),
+                  ],
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 // Card grid
                 Expanded(
                   child: GridView.builder(
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 4,
-                      crossAxisSpacing: 8,
-                      mainAxisSpacing: 8,
+                      crossAxisSpacing: 4,
+                      mainAxisSpacing: 4,
+                      childAspectRatio: 1,
                     ),
                     itemCount: gameProvider.cards.length,
                     itemBuilder: (context, index) {
                       final card = gameProvider.cards[index];
                       return Card(
-                        elevation: 4,
+                        elevation: 2,
+                        margin: EdgeInsets.zero,
                         child: InkWell(
                           onTap: () => gameProvider.flipCard(index),
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 300),
                             decoration: BoxDecoration(
-                              color: card.isFlipped ? Colors.white : Colors.blue.shade100,
+                              color: card.isMatched
+                                  ? Colors.green.shade100
+                                  : card.isFlipped
+                                      ? Colors.white
+                                      : Colors.blue.shade100,
                               borderRadius: BorderRadius.circular(4),
+                              border: card.isMatched
+                                  ? Border.all(color: Colors.green, width: 2)
+                                  : null,
                             ),
                             child: Center(
-                              child: card.isFlipped
+                              child: card.isFlipped || card.isMatched
                                   ? Text(
                                       card.animal,
-                                      style: const TextStyle(fontSize: 40),
+                                      style: TextStyle(
+                                        fontSize: 32,
+                                        color: card.isMatched
+                                            ? Colors.green
+                                            : Colors.black,
+                                      ),
                                     )
-                                  : const Icon(Icons.question_mark, size: 40),
+                                  : const Icon(Icons.question_mark, size: 32),
                             ),
                           ),
                         ),
@@ -83,11 +112,11 @@ class GameScreen extends StatelessWidget {
                     },
                   ),
                 ),
-                const SizedBox(height: 20),
-                // Shuffle button
+                const SizedBox(height: 10),
+                // New game button
                 ElevatedButton.icon(
                   onPressed: gameProvider.initGame,
-                  icon: const Icon(Icons.shuffle),
+                  icon: const Icon(Icons.refresh),
                   label: const Text('New Game'),
                 ),
               ],
